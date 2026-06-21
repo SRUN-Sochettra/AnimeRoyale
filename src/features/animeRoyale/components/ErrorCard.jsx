@@ -1,11 +1,13 @@
-import { IconBrokenEgg } from "../../../components/Icons";
+import { IconBrokenEgg } from '../../../components/Icons'
 
 export default function ErrorCard({ error }) {
   return (
-    <section role="alert" className="card mt-8 animate-[pop_0.4s_ease-out] p-6 text-center" style={{ background: "#F8D5C8" }}>
-      <div className="mb-2 flex justify-center"><IconBrokenEgg size={56} /></div>
-      <p className="font-bold text-brown-700">Oops — {error}</p>
-      <p className="mt-1 text-sm text-brown-500">Double-check the username, platform, and public profile settings.</p>
-    </section>
-  );
+    <div className="card mt-8 p-6 text-center" style={{ background: '#F8D5C8' }} role="alert">
+      <div className="flex justify-center mb-2">
+        <IconBrokenEgg size={56} />
+      </div>
+      <p className="text-brown-700 font-semibold">Oops — {error}</p>
+      <p className="text-brown-500 text-sm mt-1">Double-check the username and try again.</p>
+    </div>
+  )
 }

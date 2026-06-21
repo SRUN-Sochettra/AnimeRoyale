@@ -1,28 +1,129 @@
-import { IconMagnifier } from "../../../components/Icons";
-import { MODE_OPTIONS, PLATFORM_OPTIONS } from "../constants";
-import ChoiceGroup from "./ChoiceGroup";
-import UsernameInput from "./UsernameInput";
+import { IconMagnifier } from '../../../components/Icons'
 
-export default function AnimeRoyaleForm({ mode, platform, usernameOne, usernameTwo, loading, canSubmit, error, onModeChange, onPlatformChange, onUsernameOneChange, onUsernameTwoChange, onSubmit, onFillExamples }) {
+export default function AnimeRoyaleForm({
+  mode,
+  platform,
+  setPlatform,
+  usernameOne,
+  usernameTwo,
+  loading,
+  canSubmit,
+  error,
+  onUsernameOneChange,
+  onUsernameTwoChange,
+  onSubmit,
+  onFillExamples,
+}) {
   return (
-    <form onSubmit={onSubmit} className="card p-5 sm:p-6">
-      <fieldset disabled={loading} className="space-y-6">
-        <legend className="sr-only">AnimeRoyale scan controls</legend>
-        <ChoiceGroup label="Judgement type" options={MODE_OPTIONS} value={mode} onChange={onModeChange} name="mode" />
-        <ChoiceGroup label="Anime platform" options={PLATFORM_OPTIONS} value={platform} onChange={onPlatformChange} name="platform" />
-        <div className="space-y-3">
-          <UsernameInput id="username-one" label={mode === "solo" ? "Username" : "Challenger one"} value={usernameOne} onChange={onUsernameOneChange} placeholder={platform === "anilist" ? "anilist-username" : "mal-username"} autoFocus />
-          {mode === "battle" ? <UsernameInput id="username-two" label="Challenger two" value={usernameTwo} onChange={onUsernameTwoChange} placeholder={platform === "anilist" ? "rival-anilist" : "rival-mal"} /> : null}
-        </div>
-        {error ? <p className="rounded-2xl border-2 border-brown-700 bg-[#F8D5C8] px-4 py-3 text-sm font-bold text-brown-700">{error}</p> : null}
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <button type="submit" disabled={!canSubmit} title={canSubmit ? "Start AnimeRoyale judgement" : "Enter the required username first"} className="btn-primary focus-egg flex flex-1 items-center justify-center gap-2">
+    <form onSubmit={onSubmit} className="flex flex-col gap-3">
+      {mode === 'solo' ? (
+        <div className="flex flex-col sm:flex-row gap-3">
+          <UsernameInput
+            id="username-one"
+            label="Anime username"
+            value={usernameOne}
+            onChange={onUsernameOneChange}
+            placeholder={platform === 'anilist' ? 'anilist-username' : 'mal-username'}
+            disabled={loading}
+            autoFocus
+          />
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            title={!canSubmit ? 'Please enter a username first' : 'Inspect this profile'}
+            className="btn-primary whitespace-nowrap flex items-center gap-2 justify-center"
+          >
             <IconMagnifier size={20} />
-            {loading ? "Cracking…" : mode === "solo" ? "Inspect weeb" : "Start battle"}
+            {loading ? 'Cracking…' : 'Inspect me'}
           </button>
-          <button type="button" onClick={onFillExamples} disabled={loading} className="btn-secondary focus-egg">Fill demo</button>
         </div>
-      </fieldset>
+      ) : (
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <UsernameInput
+              id="username-one"
+              label="Challenger one"
+              value={usernameOne}
+              onChange={onUsernameOneChange}
+              placeholder={platform === 'anilist' ? 'first-anilist-user' : 'first-mal-user'}
+              disabled={loading}
+              autoFocus
+            />
+            <UsernameInput
+              id="username-two"
+              label="Challenger two"
+              value={usernameTwo}
+              onChange={onUsernameTwoChange}
+              placeholder={platform === 'anilist' ? 'second-anilist-user' : 'second-mal-user'}
+              disabled={loading}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            title={!canSubmit ? 'Please enter both usernames first' : 'Start this battle'}
+            className="btn-primary whitespace-nowrap flex items-center gap-2 justify-center"
+          >
+            <IconMagnifier size={20} />
+            {loading ? 'Cracking…' : 'Start battle'}
+          </button>
+        </div>
+      )}
+
+      <div className="flex justify-center items-center gap-3 mt-2">
+        <label htmlFor="platform-select" className="text-brown-600 font-medium text-sm">
+          Anime Platform:
+        </label>
+        <select
+          id="platform-select"
+          value={platform}
+          onChange={(event) => setPlatform(event.target.value)}
+          disabled={loading}
+          className="bg-white/50 border border-brown-300 text-brown-700 text-sm rounded-lg focus:ring-brown-500 focus:border-brown-500 block p-2 outline-none cursor-pointer"
+        >
+          <option value="anilist">AniList</option>
+          <option value="mal">MyAnimeList</option>
+        </select>
+        <button
+          type="button"
+          onClick={onFillExamples}
+          disabled={loading}
+          className="text-brown-500 font-bold hover:text-brown-700 underline underline-offset-4 transition-colors text-sm"
+        >
+          Fill demo
+        </button>
+      </div>
+
+      {error && (
+        <div className="card mt-8 p-6 text-center" style={{ background: '#F8D5C8' }}>
+          <p className="text-brown-700 font-semibold">Oops — {error}</p>
+          <p className="text-brown-500 text-sm mt-1">Double-check the username and try again.</p>
+        </div>
+      )}
     </form>
-  );
+  )
+}
+
+function UsernameInput({ id, label, value, onChange, placeholder, disabled, autoFocus = false }) {
+  return (
+    <div className="relative flex-1">
+      <label htmlFor={id} className="sr-only">
+        {label}
+      </label>
+      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-brown-300 font-bold text-lg pointer-events-none" aria-hidden="true">
+        @
+      </span>
+      <input
+        id={id}
+        type="text"
+        value={value}
+        onChange={(event) => onChange(event.target.value.trimStart())}
+        placeholder={placeholder}
+        className="input-egg w-full"
+        disabled={disabled}
+        autoFocus={autoFocus}
+        autoComplete="off"
+      />
+    </div>
+  )
 }

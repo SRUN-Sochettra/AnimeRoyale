@@ -1,5 +1,5 @@
-import AnimeRoyalePage from "./features/animeRoyale/AnimeRoyalePage";
+import AnimeRoyalePage from './features/animeRoyale/AnimeRoyalePage'
 
 export default function App() {
-  return <AnimeRoyalePage />;
+  return <AnimeRoyalePage />
 }

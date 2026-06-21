@@ -2,102 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
-
-* { box-sizing: border-box; }
+:root {
+  color-scheme: light;
+}
 
 html, body {
-  min-width: 320px;
-  min-height: 100vh;
-  margin: 0;
-  background: #fff8ec;
-  color: #2e2416;
-  font-family: "Inter", system-ui, sans-serif;
+  background: #FFF8EC;
+  color: #2E2416;
+  font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   background-image:
-    radial-gradient(circle at 20% 30%, #f0e3c4 1.5px, transparent 1.5px),
-    radial-gradient(circle at 70% 60%, #d9bf8a 1px, transparent 1px),
-    radial-gradient(circle at 40% 80%, #f0e3c4 1px, transparent 1px),
-    radial-gradient(circle at 85% 15%, #d9bf8a 1.5px, transparent 1.5px);
+    radial-gradient(circle at 20% 30%, #F0E3C4 1.5px, transparent 1.5px),
+    radial-gradient(circle at 70% 60%, #D9BF8A 1px, transparent 1px),
+    radial-gradient(circle at 40% 80%, #F0E3C4 1px, transparent 1px),
+    radial-gradient(circle at 85% 15%, #D9BF8A 1.5px, transparent 1.5px);
   background-size: 200px 200px, 250px 250px, 180px 180px, 220px 220px;
   background-position: 0 0, 50px 80px, 100px 150px, 160px 30px;
 }
 
-button, input, select { font: inherit; }
-button { cursor: pointer; }
-button:disabled { cursor: not-allowed; }
-::selection { background: #f5b544; color: #2e2416; }
-
 .card {
-  background: #fffdf7;
-  border: 2px solid #2e2416;
+  background: #FFFDF7;
+  border: 2px solid #2E2416;
   border-radius: 24px;
-  box-shadow: 0 6px 0 -1px #2e2416;
+  box-shadow: 0 6px 0 -1px #2E2416;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.card-hover:hover {
+.card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 0 -1px #2e2416;
+  box-shadow: 0 8px 0 -1px #2E2416;
 }
 
-.btn-primary, .btn-secondary {
-  color: #2e2416;
-  border: 2px solid #2e2416;
+.btn-primary {
+  background: #F5B544;
+  color: #2E2416;
+  border: 2px solid #2E2416;
   border-radius: 16px;
-  font-weight: 800;
-  box-shadow: 0 4px 0 -1px #2e2416;
+  font-weight: 700;
+  padding: 14px 28px;
+  box-shadow: 0 4px 0 -1px #2E2416;
   transition: all 0.12s ease;
 }
 
-.btn-primary { background: #f5b544; padding: 14px 28px; }
-.btn-secondary { background: #fffdf7; padding: 14px 20px; }
-.btn-primary:hover:not(:disabled), .btn-secondary:hover:not(:disabled) {
+.btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 -1px #2e2416;
+  box-shadow: 0 6px 0 -1px #2E2416;
 }
-.btn-secondary:hover:not(:disabled) { background: #fce9b8; }
-.btn-primary:active:not(:disabled), .btn-secondary:active:not(:disabled) {
+
+.btn-primary:active:not(:disabled) {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 -1px #2e2416;
+  box-shadow: 0 2px 0 -1px #2E2416;
 }
-.btn-primary:disabled, .btn-secondary:disabled { opacity: 0.6; }
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 .input-egg {
-  width: 100%;
-  background: #fffdf7;
-  border: 2px solid #2e2416;
+  background: #FFFDF7;
+  border: 2px solid #2E2416;
   border-radius: 16px;
   padding: 14px 18px 14px 36px;
   font-size: 16px;
-  font-weight: 600;
-  color: #2e2416;
-  box-shadow: 0 4px 0 -1px #2e2416;
+  font-weight: 500;
+  color: #2E2416;
+  box-shadow: 0 4px 0 -1px #2E2416;
   transition: all 0.12s ease;
   outline: none;
 }
-.input-egg:focus { transform: translateY(-1px); box-shadow: 0 5px 0 -1px #2e2416; }
-.input-egg::placeholder { color: #b89968; }
+
+.input-egg:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 -1px #2E2416;
+}
+
+.input-egg::placeholder {
+  color: #B89968;
+}
 
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #fce9b8;
-  color: #2e2416;
-  border: 1.5px solid #2e2416;
+  background: #FCE9B8;
+  color: #2E2416;
+  border: 1.5px solid #2E2416;
   padding: 6px 14px;
   border-radius: 999px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 13px;
-  box-shadow: 0 2px 0 -1px #2e2416;
+  box-shadow: 0 2px 0 -1px #2E2416;
 }
-
-.focus-egg { outline: none; }
-.focus-egg:focus-visible { box-shadow: 0 0 0 3px #fff8ec, 0 0 0 6px #2e2416; }
-.hide-scrollbar { scrollbar-width: none; }
-.hide-scrollbar::-webkit-scrollbar { display: none; }

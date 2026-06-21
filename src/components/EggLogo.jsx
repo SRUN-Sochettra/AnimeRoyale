@@ -1,11 +1,25 @@
-export default function EggLogo({ size = 80, animated = false }) {
+export default function EggLogo({ size = 72, animated = false }) {
   return (
-    <svg width={size} height={size * 1.15} viewBox="0 0 90 104" aria-hidden="true" className={animated ? "animate-wobble" : undefined}>
-      <ellipse cx="45" cy="54" rx="31" ry="41" fill="#FCE9B8" stroke="#2E2416" strokeWidth="4" />
-      <path d="M28 50L36 58L45 47L54 59L63 49" fill="none" stroke="#C84A2E" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="32" cy="38" r="2" fill="#B89968" />
-      <circle cx="56" cy="42" r="1.8" fill="#B89968" />
-      <circle cx="49" cy="72" r="2" fill="#B89968" />
+    <svg
+      width={size}
+      height={size * 1.2}
+      viewBox="0 0 80 96"
+      className={animated ? 'animate-float' : ''}
+      style={{ filter: 'drop-shadow(0 5px 0 #2E2416)' }}
+      aria-hidden="true"
+    >
+      <ellipse cx="40" cy="52" rx="32" ry="40" fill="#FCE9B8" stroke="#2E2416" strokeWidth="3" />
+      <circle cx="22" cy="38" r="1.8" fill="#B89968" />
+      <circle cx="54" cy="34" r="1.4" fill="#B89968" />
+      <circle cx="58" cy="62" r="1.8" fill="#B89968" />
+      <circle cx="20" cy="68" r="1.4" fill="#B89968" />
+      <circle cx="46" cy="78" r="1.6" fill="#B89968" />
+      <circle cx="30" cy="48" r="1" fill="#B89968" />
+      <path d="M 28 54 Q 32 50 36 54" stroke="#2E2416" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+      <path d="M 44 54 Q 48 50 52 54" stroke="#2E2416" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+      <path d="M 33 64 Q 40 70 47 64" stroke="#2E2416" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+      <ellipse cx="24" cy="62" rx="3.5" ry="2.5" fill="#F5B544" opacity="0.55" />
+      <ellipse cx="56" cy="62" rx="3.5" ry="2.5" fill="#F5B544" opacity="0.55" />
     </svg>
-  );
+  )
 }
