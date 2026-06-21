@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #fff7dc;
+  background: #080704;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: #ffcc33;
+  color: #080704;
+}
+
+.bg-egg-noise {
+  background-image:
+    radial-gradient(circle at top left, rgba(255, 204, 51, 0.22), transparent 30rem),
+    radial-gradient(circle at bottom right, rgba(255, 92, 59, 0.12), transparent 28rem),
+    linear-gradient(180deg, #080704 0%, #100c05 100%);
+}
+
+.egg-glow {
+  box-shadow:
+    0 0 0 1px rgba(255, 204, 51, 0.14),
+    0 24px 80px rgba(255, 176, 0, 0.18);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
