@@ -17,6 +17,7 @@ import { EXAMPLE_USERS } from './constants'
 export default function AnimeRoyalePage() {
   const [mode, setMode] = useState('solo')
   const [platform, setPlatform] = useState('anilist')
+  const [mediaScope, setMediaScope] = useState('anime')
   const [usernameOne, setUsernameOne] = useState('')
   const [usernameTwo, setUsernameTwo] = useState('')
   const [loading, setLoading] = useState(false)
@@ -51,31 +52,31 @@ export default function AnimeRoyalePage() {
 
     await executeWithLoading(async () => {
       if (mode === 'solo') {
-        const player = await fetchUserStats(platform, usernameOne.trim())
+        const player = await fetchUserStats(platform, usernameOne.trim(), mediaScope)
         let commentary
         try {
-          commentary = await generateSoloCommentary({ platform, player })
+          commentary = await generateSoloCommentary({ platform, player, mediaScope })
         } catch {
           commentary = buildFallbackSoloRoast(player)
         }
-        setResult({ type: 'solo', platform, player, commentary })
+        setResult({ type: 'solo', platform, mediaScope, player, commentary })
         return
       }
 
       const users = await Promise.all([
-        fetchUserStats(platform, usernameOne.trim()),
-        fetchUserStats(platform, usernameTwo.trim()),
+        fetchUserStats(platform, usernameOne.trim(), mediaScope),
+        fetchUserStats(platform, usernameTwo.trim(), mediaScope),
       ])
       const playerOne = users[0]
       const playerTwo = users[1]
       const winner = getWinner(playerOne, playerTwo)
       let commentary
       try {
-        commentary = await generateBattleCommentary({ platform, playerOne, playerTwo, winner })
+        commentary = await generateBattleCommentary({ platform, mediaScope, playerOne, playerTwo, winner })
       } catch {
         commentary = buildFallbackRoast(playerOne, playerTwo, winner)
       }
-      setResult({ type: 'battle', platform, playerOne, playerTwo, winner, commentary })
+      setResult({ type: 'battle', platform, mediaScope, playerOne, playerTwo, winner, commentary })
     })
   }
 
@@ -99,9 +100,9 @@ export default function AnimeRoyalePage() {
   const copyResult = async () => {
     if (!result) return
     const title = result.type === 'solo'
-      ? 'AnimeRoyale Solo Inspection: ' + result.player.username
-      : 'AnimeRoyale Battle: ' + result.playerOne.username + ' vs ' + result.playerTwo.username
-    const text = ['🥚 ' + title, '', result.commentary, '', 'AnimeRoyale — anime stats, rated in eggs.'].join(String.fromCharCode(10))
+      ? 'AnimeRoyale ' + result.player.scopeLabel + ' Inspection: ' + result.player.username
+      : 'AnimeRoyale ' + result.playerOne.scopeLabel + ' Battle: ' + result.playerOne.username + ' vs ' + result.playerTwo.username
+    const text = ['🥚 ' + title, '', result.commentary, '', 'AnimeRoyale — media stats, rated in eggs.'].join(String.fromCharCode(10))
     try {
       await navigator.clipboard.writeText(text)
       setCopyStatus('Copied.')
@@ -127,7 +128,7 @@ export default function AnimeRoyalePage() {
             AnimeRoyale
           </h1>
           <p className="text-brown-500 mt-3 text-lg font-medium">
-            Anime stats, through the egg court&apos;s eyes.
+            Anime, manga, and novels through the egg court&apos;s eyes.
             <br />
             <span className="text-brown-400">Rated in eggs.</span>
           </p>
@@ -147,6 +148,8 @@ export default function AnimeRoyalePage() {
           mode={mode}
           platform={platform}
           setPlatform={setPlatform}
+          mediaScope={mediaScope}
+          setMediaScope={setMediaScope}
           usernameOne={usernameOne}
           usernameTwo={usernameTwo}
           loading={loading}

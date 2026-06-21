@@ -1,88 +1,99 @@
 export function getWinner(playerOne, playerTwo) {
-  if (playerOne.battleScore > playerTwo.battleScore) return playerOne;
-  if (playerTwo.battleScore > playerOne.battleScore) return playerTwo;
+  if (playerOne.battleScore > playerTwo.battleScore) return playerOne
+  if (playerTwo.battleScore > playerOne.battleScore) return playerTwo
 
-  if (playerOne.episodesWatched > playerTwo.episodesWatched) return playerOne;
-  if (playerTwo.episodesWatched > playerOne.episodesWatched) return playerTwo;
+  if (playerOne.activityUnits > playerTwo.activityUnits) return playerOne
+  if (playerTwo.activityUnits > playerOne.activityUnits) return playerTwo
 
-  return null;
+  return null
 }
 
 export function buildFallbackRoast(playerOne, playerTwo, winner) {
+  const scope = playerOne.scopeLabel || 'Anime'
+  const activityLabel = playerOne.statLabels?.activity || 'Episodes'
+
   if (!winner) {
-    return `ABSOLUTE EGG CHAOS. ${playerOne.username.toUpperCase()} AND ${playerTwo.username.toUpperCase()} HAVE PRODUCED A TIE SO UNSTABLE THE YOLK REFUSES TO PICK A SIDE.
+    return `ABSOLUTE EGG CHAOS. ${playerOne.username.toUpperCase()} AND ${playerTwo.username.toUpperCase()} HAVE PRODUCED A ${scope.toUpperCase()} TIE SO UNSTABLE THE YOLK REFUSES TO PICK A SIDE.
 
 TWO WEEBS ENTERED. TWO WEEBS SURVIVED. THE EGG JUDGES ARE DISGUSTED.
 
-RESULT: EGG-STAINED TIE 🥚⚔️`;
+RESULT: EGG-STAINED TIE 🥚⚔️`
   }
 
-  const loser = winner.username === playerOne.username ? playerTwo : playerOne;
+  const loser = winner.username === playerOne.username ? playerTwo : playerOne
 
-  return `AND THERE IT IS, FOLKS! ${winner.username.toUpperCase()} HAS CRACKED THE ARENA OPEN WITH ${winner.episodesWatched.toLocaleString()} EPISODES WATCHED, STANDING PROUD AS A ${winner.eggTier.emoji} ${winner.eggTier.rank.toUpperCase()}.
+  return `AND THERE IT IS, FOLKS! ${winner.username.toUpperCase()} HAS CRACKED THE ${scope.toUpperCase()} ARENA OPEN WITH ${winner.activityUnits.toLocaleString()} ${activityLabel.toUpperCase()}, STANDING PROUD AS A ${winner.eggTier.emoji} ${winner.eggTier.rank.toUpperCase()}.
 
-${loser.username.toUpperCase()} PUT UP A FIGHT, BUT THIS WAS LESS OF A BATTLE AND MORE OF A PUBLIC EGG INSPECTION. ${loser.episodesWatched.toLocaleString()} EPISODES? RESPECTABLE. DANGEROUS? NOT TODAY.
+${loser.username.toUpperCase()} PUT UP A FIGHT, BUT THIS WAS LESS OF A BATTLE AND MORE OF A PUBLIC EGG INSPECTION. ${loser.activityUnits.toLocaleString()} ${activityLabel.toUpperCase()}? RESPECTABLE. DANGEROUS? NOT TODAY.
 
-WINNER: ${winner.username.toUpperCase()} ${winner.eggTier.emoji}👑`;
+WINNER: ${winner.username.toUpperCase()} ${winner.eggTier.emoji}👑`
 }
 
 export function buildFallbackSoloRoast(player) {
-  return `THE EGG COURT HAS INSPECTED ${player.username.toUpperCase()} AND THE RESULTS ARE LOUD, YOLKY, AND LEGALLY CONCERNING.
+  const scope = player.scopeLabel || 'Anime'
+  const labels = player.statLabels || {
+    entries: 'Anime',
+    activity: 'Episodes',
+    days: 'Days',
+  }
 
-${player.username.toUpperCase()} HAS WATCHED ${player.episodesWatched.toLocaleString()} EPISODES ACROSS ${player.totalAnime.toLocaleString()} ANIME, CLOCKING IN AT ${Number(
-    player.daysWatched || 0
-  ).toFixed(1)} DAYS OF COMMITTED SCREEN-TIME DAMAGE. THAT EARNS THE SACRED TITLE OF ${player.eggTier.emoji} ${player.eggTier.rank.toUpperCase()}.
+  return `THE EGG COURT HAS INSPECTED ${player.username.toUpperCase()} IN ${scope.toUpperCase()} MODE AND THE RESULTS ARE LOUD, YOLKY, AND LEGALLY CONCERNING.
 
-FINAL VERDICT: ${player.username.toUpperCase()} IS ${player.eggTier.rank.toUpperCase()} ${player.eggTier.emoji}`;
+${player.username.toUpperCase()} HAS LOGGED ${player.activityUnits.toLocaleString()} ${labels.activity.toUpperCase()} ACROSS ${player.totalEntries.toLocaleString()} ${labels.entries.toUpperCase()}, EARNING THE SACRED TITLE OF ${player.eggTier.emoji} ${player.eggTier.rank.toUpperCase()}.
+
+FINAL VERDICT: ${player.username.toUpperCase()} IS ${player.eggTier.rank.toUpperCase()} ${player.eggTier.emoji}`
 }
 
 export async function generateBattleCommentary({
   platform,
   playerOne,
   playerTwo,
-  winner
+  winner,
+  mediaScope,
 }) {
-  const response = await fetch("/api/roast", {
-    method: "POST",
+  const response = await fetch('/api/roast', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      mode: "battle",
+      mode: 'battle',
       platform,
+      mediaScope,
       playerOne,
       playerTwo,
-      winner
-    })
-  });
+      winner,
+    }),
+  })
 
-  const payload = await response.json().catch(() => null);
+  const payload = await response.json().catch(() => null)
 
   if (!response.ok) {
-    throw new Error(payload?.message || "AI commentary failed.");
+    throw new Error(payload?.message || 'AI commentary failed.')
   }
 
-  return payload.commentary;
+  return payload.commentary
 }
 
-export async function generateSoloCommentary({ platform, player }) {
-  const response = await fetch("/api/roast", {
-    method: "POST",
+export async function generateSoloCommentary({ platform, player, mediaScope }) {
+  const response = await fetch('/api/roast', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      mode: "solo",
+      mode: 'solo',
       platform,
-      player
-    })
-  });
+      mediaScope,
+      player,
+    }),
+  })
 
-  const payload = await response.json().catch(() => null);
+  const payload = await response.json().catch(() => null)
 
   if (!response.ok) {
-    throw new Error(payload?.message || "AI solo commentary failed.");
+    throw new Error(payload?.message || 'AI solo commentary failed.')
   }
 
-  return payload.commentary;
+  return payload.commentary
 }

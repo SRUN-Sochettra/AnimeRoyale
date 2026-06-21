@@ -7,6 +7,15 @@ export default function PlayerCard({ player, crowned = false, rotate = '' }) {
   }
 
   const avatarStyle = player.avatarUrl ? { backgroundImage: 'url(' + player.avatarUrl + ')' } : undefined
+  const labels = player.statLabels || {
+    entries: 'Anime',
+    activity: 'Episodes',
+    days: 'Days',
+    active: 'Watching',
+  }
+  const thirdValue = player.mediaScope === 'manga' || player.mediaScope === 'novels'
+    ? formatNumber(player.mangaStats?.volumesRead || player.novelStats?.volumesRead || 0)
+    : formatDays(player.daysWatched)
 
   return (
     <article className={'card p-5 ' + rotate}>
@@ -30,14 +39,17 @@ export default function PlayerCard({ player, crowned = false, rotate = '' }) {
           <p className="mt-1 font-bold text-brown-500">
             {player.eggTier.emoji} {player.eggTier.rank}
           </p>
+          <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-brown-400">
+            {player.scopeLabel} mode
+          </p>
         </div>
       </div>
       <dl className="mt-5 grid grid-cols-2 gap-3">
-        <Stat label="Episodes" value={formatNumber(player.episodesWatched)} />
-        <Stat label="Days" value={formatDays(player.daysWatched)} />
-        <Stat label="Anime" value={formatNumber(player.totalAnime)} />
+        <Stat label={labels.activity} value={formatNumber(player.activityUnits)} />
+        <Stat label={labels.days} value={thirdValue} />
+        <Stat label={labels.entries} value={formatNumber(player.totalEntries)} />
         <Stat label="Mean" value={Number(player.meanScore || 0).toFixed(1)} />
-        <Stat label="Watching" value={formatNumber(player.currentlyWatching)} />
+        <Stat label={labels.active} value={formatNumber(player.activeCount)} />
         <Stat label="Score" value={formatNumber(player.battleScore)} />
       </dl>
       {player.favoriteGenres?.length ? (
