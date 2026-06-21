@@ -13,9 +13,7 @@ export default function PlayerCard({ player, crowned = false, rotate = '' }) {
     days: 'Days',
     active: 'Watching',
   }
-  const thirdValue = player.mediaScope === 'manga' || player.mediaScope === 'novels'
-    ? formatNumber(player.mangaStats?.volumesRead || player.novelStats?.volumesRead || 0)
-    : formatDays(player.daysWatched)
+  const secondary = getSecondaryStat(player, labels)
 
   return (
     <article className={'card p-5 ' + rotate}>
@@ -46,7 +44,7 @@ export default function PlayerCard({ player, crowned = false, rotate = '' }) {
       </div>
       <dl className="mt-5 grid grid-cols-2 gap-3">
         <Stat label={labels.activity} value={formatNumber(player.activityUnits)} />
-        <Stat label={labels.days} value={thirdValue} />
+        <Stat label={secondary.label} value={secondary.value} />
         <Stat label={labels.entries} value={formatNumber(player.totalEntries)} />
         <Stat label="Mean" value={Number(player.meanScore || 0).toFixed(1)} />
         <Stat label={labels.active} value={formatNumber(player.activeCount)} />
@@ -59,4 +57,25 @@ export default function PlayerCard({ player, crowned = false, rotate = '' }) {
       ) : null}
     </article>
   )
+}
+
+function getSecondaryStat(player, labels) {
+  if (player.mediaScope === 'manga') {
+    return {
+      label: labels.days,
+      value: formatNumber(player.mangaStats?.volumesRead || 0),
+    }
+  }
+
+  if (player.mediaScope === 'novels') {
+    return {
+      label: labels.days,
+      value: formatNumber(player.totalEntries),
+    }
+  }
+
+  return {
+    label: labels.days,
+    value: formatDays(player.daysWatched),
+  }
 }

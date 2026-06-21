@@ -17,7 +17,7 @@ import { EXAMPLE_USERS } from './constants'
 export default function AnimeRoyalePage() {
   const [mode, setMode] = useState('solo')
   const [platform, setPlatform] = useState('anilist')
-  const [mediaScope, setMediaScope] = useState('anime')
+  const [mediaScope, setMediaScope] = useState('combined')
   const [usernameOne, setUsernameOne] = useState('')
   const [usernameTwo, setUsernameTwo] = useState('')
   const [loading, setLoading] = useState(false)

@@ -12,18 +12,19 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "vite": "latest"
   },
   "devDependencies": {
-    "tailwindcss": "latest",
-    "postcss": "latest",
+    "@eslint/js": "latest",
     "autoprefixer": "latest",
     "eslint": "latest",
-    "@eslint/js": "latest",
     "eslint-plugin-react-hooks": "latest",
     "eslint-plugin-react-refresh": "latest",
-    "globals": "latest"
+    "globals": "latest",
+    "postcss": "latest",
+    "tailwindcss": "latest",
+    "vercel": "^54.14.5"
   }
 }

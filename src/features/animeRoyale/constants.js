@@ -5,6 +5,10 @@ export const EXAMPLE_USERS = {
 
 export const MEDIA_SCOPE_OPTIONS = [
   {
+    id: 'combined',
+    label: 'Combined',
+  },
+  {
     id: 'anime',
     label: 'Anime',
   },
@@ -15,9 +19,5 @@ export const MEDIA_SCOPE_OPTIONS = [
   {
     id: 'novels',
     label: 'Novels',
-  },
-  {
-    id: 'combined',
-    label: 'Combined',
   },
 ]

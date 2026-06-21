@@ -1,4 +1,3 @@
-
 import { getEggTier } from './eggTiers'
 
 const ANILIST_URL = 'https://graphql.anilist.co'
@@ -12,7 +11,7 @@ export class AnimeApiError extends Error {
   }
 }
 
-export async function fetchUserStats(platform, username, mediaScope = 'anime') {
+export async function fetchUserStats(platform, username, mediaScope = 'combined') {
   const cleanUsername = username.trim()
 
   if (!cleanUsername) {
@@ -293,10 +292,16 @@ function selectStats(mediaScope, animeStats, mangaStats, novelStats) {
 
   if (mediaScope === 'combined') {
     const totalEntries = animeStats.totalEntries + mangaStats.totalEntries
-    const activityUnits = Math.round(animeStats.activityUnits + mangaStats.chaptersRead * 0.35 + mangaStats.volumesRead * 6)
+    const activityUnits = Math.round(
+      animeStats.activityUnits +
+        mangaStats.chaptersRead * 0.35 +
+        mangaStats.volumesRead * 6 +
+        novelStats.chaptersRead * 0.45
+    )
     const meanScore = weightedMean([
       [animeStats.meanScore, animeStats.totalEntries],
       [mangaStats.meanScore, mangaStats.totalEntries],
+      [novelStats.meanScore, novelStats.totalEntries],
     ])
 
     return {
@@ -304,10 +309,10 @@ function selectStats(mediaScope, animeStats, mangaStats, novelStats) {
       activityUnits,
       daysWatched: animeStats.daysWatched,
       meanScore,
-      activeCount: animeStats.activeCount + mangaStats.activeCount,
-      chaptersRead: mangaStats.chaptersRead,
+      activeCount: animeStats.activeCount + mangaStats.activeCount + novelStats.activeCount,
+      chaptersRead: mangaStats.chaptersRead + novelStats.chaptersRead,
       volumesRead: mangaStats.volumesRead,
-      genres: [...animeStats.genres, ...mangaStats.genres],
+      genres: [...animeStats.genres, ...mangaStats.genres, ...novelStats.genres],
     }
   }
 
@@ -362,7 +367,11 @@ function calculateBattleScore({ selectedStats, animeStats, mangaStats, novelStat
   const active = normalizeNumber(selectedStats.activeCount)
 
   if (mediaScope === 'combined') {
-    const combinedActivity = animeStats.episodesWatched + mangaStats.chaptersRead * 0.35 + mangaStats.volumesRead * 6 + novelStats.chaptersRead * 0.45
+    const combinedActivity =
+      animeStats.episodesWatched +
+      mangaStats.chaptersRead * 0.35 +
+      mangaStats.volumesRead * 6 +
+      novelStats.chaptersRead * 0.45
     return Math.round(combinedActivity + entries * 18 + active * 12 + meanScore * 45)
   }
 
@@ -400,9 +409,9 @@ function getStatLabels(mediaScope) {
 
   if (mediaScope === 'novels') {
     return {
-      entries: 'Novels',
+      entries: 'Entries',
       activity: 'Chapters',
-      days: 'Volumes',
+      days: 'Novels',
       active: 'Reading',
     }
   }
