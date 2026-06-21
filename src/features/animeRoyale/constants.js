@@ -1,6 +1,6 @@
 export const EXAMPLE_USERS = {
-  anilist: ['Josh', 'theanimetea'],
-  mal: ['DaZinga', 'CDawgVA']
+  anilist: ['theanimetea', 'thatdannie'],
+  mal: ['Gigguk', 'DaZinga']
 }
 
 export const MEDIA_SCOPE_OPTIONS = [

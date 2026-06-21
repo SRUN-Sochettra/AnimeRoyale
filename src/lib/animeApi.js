@@ -1,3 +1,4 @@
+
 import { getEggTier } from './eggTiers'
 
 const ANILIST_URL = 'https://graphql.anilist.co'
@@ -76,7 +77,6 @@ async function fetchAniListStats(username, mediaScope) {
               count
               meanScore
               chaptersRead
-              volumesRead
             }
           }
         }
@@ -149,7 +149,7 @@ function normalizeAniListUser(user, mediaScope) {
   const novelStats = buildMangaStats({
     count: novelFormat.count,
     chaptersRead: novelFormat.chaptersRead,
-    volumesRead: novelFormat.volumesRead,
+    volumesRead: 0,
     meanScore: novelFormat.meanScore,
     activeCount: 0,
     genres: [],
@@ -276,8 +276,6 @@ function buildUser({ platform, username, avatarUrl, profileUrl, mediaScope, anim
     favoriteGenres,
     eggTier,
     battleScore,
-
-    // Backward-compatible fields used by older UI/commentary.
     totalAnime: selectedStats.totalEntries,
     episodesWatched: selectedStats.activityUnits,
     currentlyWatching: selectedStats.activeCount,
@@ -364,7 +362,7 @@ function calculateBattleScore({ selectedStats, animeStats, mangaStats, novelStat
   const active = normalizeNumber(selectedStats.activeCount)
 
   if (mediaScope === 'combined') {
-    const combinedActivity = animeStats.episodesWatched + mangaStats.chaptersRead * 0.35 + mangaStats.volumesRead * 6 + novelStats.chaptersRead * 0.45 + novelStats.volumesRead * 8
+    const combinedActivity = animeStats.episodesWatched + mangaStats.chaptersRead * 0.35 + mangaStats.volumesRead * 6 + novelStats.chaptersRead * 0.45
     return Math.round(combinedActivity + entries * 18 + active * 12 + meanScore * 45)
   }
 
