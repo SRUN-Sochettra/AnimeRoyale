@@ -163,11 +163,12 @@ function getSoloPrompt(mode = "honest") {
   return basePrompt + " " + tone + " " + schema;
 }
 
-function getBattlePrompt() {
+function getBattlePrompt(tone) {
+  const tonePrompt = getTonePrompt(tone);
   return (
-    "You are an aggressive fighting game announcer. Two anime/manga/novel tracking profiles are battling. " +
+    "Two anime/manga/novel tracking profiles are battling. " +
     "Read their stats and declare a winner in exactly one paragraph. Roast the loser. Hype the winner. Be highly entertaining. " +
-    "Use only public tracking stats. Be specific. No filler. " +
+    "Use only public tracking stats. Be specific. No filler. " + tonePrompt + " " +
     "Respond with valid JSON: { \"winner\": \"username or TIE\", \"report\": \"your paragraph here\" }"
   );
 }
@@ -284,6 +285,49 @@ function buildBattleCommentary(json, fallbackWinner) {
   return `${report}\n\nWINNER: ${winner.toUpperCase()} 🥚👑`;
 }
 
+
+function getMatchmakerPrompt(tone) {
+  const tonePrompt = getTonePrompt(tone);
+  return (
+    "Two anime/manga/novel tracking profiles are being compared for compatibility. " +
+    "Read their stats and provide a relationship assessment in exactly one paragraph. Compare their genres, scores, and activity levels. Be highly entertaining. " +
+    "Use only public tracking stats. Be specific. No filler. " + tonePrompt + " " +
+    "Respond with valid JSON: { \"affinityScore\": \"0-100\", \"report\": \"your paragraph here\" }"
+  );
+}
+
+
+function buildMatchmakerContext({ platform, mediaScope, playerOne, playerTwo }) {
+  const p1 = safeUser(playerOne);
+  const p2 = safeUser(playerTwo);
+  const meta = metaFor(mediaScope || p1.mediaScope);
+
+  return `--- PLAYER 1: ${p1.username} ---
+Platform: ${platform}
+Content scope: ${meta.label}
+${p1.entriesLabel}: ${formatInt(p1.totalEntries)}
+${p1.activityLabel}: ${formatInt(p1.activityUnits)}
+Mean score: ${oneDecimal(p1.meanScore)}
+Genres: ${p1.favoriteGenres.length ? p1.favoriteGenres.join(", ") : "(none visible)"}
+
+--- PLAYER 2: ${p2.username} ---
+Platform: ${platform}
+Content scope: ${meta.label}
+${p2.entriesLabel}: ${formatInt(p2.totalEntries)}
+${p2.activityLabel}: ${formatInt(p2.activityUnits)}
+Mean score: ${oneDecimal(p2.meanScore)}
+Genres: ${p2.favoriteGenres.length ? p2.favoriteGenres.join(", ") : "(none visible)"}
+
+Respond with JSON: { "affinityScore": "0-100", "report": "your paragraph here" }`;
+}
+
+
+function buildMatchmakerCommentary(json) {
+  const score = stripEmoji(json?.affinityScore || "0");
+  const report = stripEmoji(json?.report || "The egg court stared at the stats and somehow produced no usable commentary.");
+  return `${report}\n\nCOMPATIBILITY SCORE: ${score}/100 🥚💖`;
+}
+
 export default async function handler(request, response) {
   if (request.method !== "POST") {
     return response.status(405).json({ message: "Method not allowed." });
@@ -310,6 +354,23 @@ export default async function handler(request, response) {
       return response.status(400).json({ message: "Missing platform." });
     }
 
+
+    if (mode === "matchmaker") {
+      if (!playerOne || !playerTwo) {
+        return response.status(400).json({ message: "Missing matchmaker payload." });
+      }
+
+      const json = await chatJson(
+        getMatchmakerPrompt(tone),
+        buildMatchmakerContext({ platform, mediaScope, playerOne, playerTwo })
+      );
+
+      return response.status(200).json({
+        commentary: buildMatchmakerCommentary(json),
+        analysis: json
+      });
+    }
+
     if (mode === "solo") {
       if (!player) {
         return response.status(400).json({ message: "Missing solo player payload." });
@@ -331,7 +392,7 @@ export default async function handler(request, response) {
     }
 
     const json = await chatJson(
-      getBattlePrompt(),
+      getBattlePrompt(tone),
       buildBattleContext({ platform, mediaScope, playerOne, playerTwo, winner })
     );
 

@@ -50,6 +50,7 @@ export async function generateBattleCommentary({
   playerTwo,
   winner,
   mediaScope,
+  tone,
 }) {
   const response = await fetch('/api/roast', {
     method: 'POST',
@@ -60,6 +61,7 @@ export async function generateBattleCommentary({
       mode: 'battle',
       platform,
       mediaScope,
+      tone,
       playerOne,
       playerTwo,
       winner,
@@ -75,7 +77,7 @@ export async function generateBattleCommentary({
   return payload.commentary
 }
 
-export async function generateSoloCommentary({ platform, player, mediaScope }) {
+export async function generateSoloCommentary({ platform, player, mediaScope, tone }) {
   const response = await fetch('/api/roast', {
     method: 'POST',
     headers: {
@@ -85,6 +87,7 @@ export async function generateSoloCommentary({ platform, player, mediaScope }) {
       mode: 'solo',
       platform,
       mediaScope,
+      tone,
       player,
     }),
   })
@@ -95,5 +98,36 @@ export async function generateSoloCommentary({ platform, player, mediaScope }) {
     throw new Error(payload?.message || 'AI solo commentary failed.')
   }
 
+  return payload.commentary
+}
+
+
+export function buildFallbackMatchmaker(playerOne, playerTwo) {
+  return `THE EGG COURT HAS EVALUATED THE AFFINITY BETWEEN ${playerOne.username.toUpperCase()} AND ${playerTwo.username.toUpperCase()}.
+
+RESULT: IT'S A MATCH MADE IN ANIME HEAVEN 🥚💖 (or maybe not, the AI failed to respond).`
+}
+
+export async function generateMatchmakerCommentary({
+  platform,
+  playerOne,
+  playerTwo,
+  mediaScope,
+  tone,
+}) {
+  const response = await fetch('/api/roast', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      mode: 'matchmaker',
+      platform,
+      mediaScope,
+      tone,
+      playerOne,
+      playerTwo,
+    }),
+  })
+  const payload = await response.json().catch(() => null)
+  if (!response.ok) throw new Error(payload?.message || 'AI commentary failed.')
   return payload.commentary
 }

@@ -1,6 +1,24 @@
-export function getEggTier(activity = 0, mediaScope = 'anime') {
-  const value = Number(activity) || 0
+export function getEggTier(selectedStats, animeStats, mangaStats, novelStats, mediaScope = 'anime') {
+  const value = Number(selectedStats?.activityUnits) || 0
   const labels = getTierLabels(mediaScope)
+
+  // Easter Eggs
+  const meanScore = Number(selectedStats?.meanScore) || 0
+  const daysWatched = Number(selectedStats?.daysWatched) || 0
+
+  if (meanScore >= 6.85 && meanScore <= 6.95) {
+    return { emoji: '😎', rank: 'Nice Egg', min: 0, max: Infinity }
+  }
+
+  if (daysWatched > 365) {
+    return { emoji: '🌱', rank: 'Grass-Starved Egg', min: 0, max: Infinity }
+  }
+
+  const animeCount = Number(animeStats?.totalEntries) || 0
+  const mangaCount = Number(mangaStats?.totalEntries) || 0
+  if (animeCount === 0 && mangaCount > 100) {
+    return { emoji: '👻', rank: 'Manga Ghost Egg', min: 0, max: Infinity }
+  }
 
   if (value < 500) {
     return {

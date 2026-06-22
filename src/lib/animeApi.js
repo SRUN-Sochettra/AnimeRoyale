@@ -253,7 +253,7 @@ async function fetchMalStats(username, mediaScope) {
 function buildUser({ platform, username, avatarUrl, profileUrl, mediaScope, animeStats, mangaStats, novelStats }) {
   const selectedStats = selectStats(mediaScope, animeStats, mangaStats, novelStats)
   const favoriteGenres = uniqueCompact(selectedStats.genres)
-  const eggTier = getEggTier(selectedStats.activityUnits, mediaScope)
+  const eggTier = getEggTier(selectedStats, animeStats, mangaStats, novelStats, mediaScope)
   const battleScore = calculateBattleScore({ selectedStats, animeStats, mangaStats, novelStats, mediaScope })
 
   return {

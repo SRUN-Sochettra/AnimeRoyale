@@ -1,5 +1,5 @@
 import { IconMagnifier } from '../../../components/Icons'
-import { MEDIA_SCOPE_OPTIONS } from '../constants'
+import { MEDIA_SCOPE_OPTIONS, TONE_OPTIONS } from '../constants'
 
 export default function AnimeRoyaleForm({
   mode,
@@ -7,6 +7,8 @@ export default function AnimeRoyaleForm({
   setPlatform,
   mediaScope,
   setMediaScope,
+  tone,
+  setTone,
   usernameOne,
   usernameTwo,
   loading,
@@ -45,7 +47,7 @@ export default function AnimeRoyaleForm({
           <div className="flex flex-col sm:flex-row gap-3">
             <UsernameInput
               id="username-one"
-              label="Challenger one"
+              label={mode === 'battle' ? 'Challenger one' : 'Lover one'}
               value={usernameOne}
               onChange={onUsernameOneChange}
               placeholder={platform === 'anilist' ? 'first-anilist-user' : 'first-mal-user'}
@@ -54,7 +56,7 @@ export default function AnimeRoyaleForm({
             />
             <UsernameInput
               id="username-two"
-              label="Challenger two"
+              label={mode === 'battle' ? 'Challenger two' : 'Lover two'}
               value={usernameTwo}
               onChange={onUsernameTwoChange}
               placeholder={platform === 'anilist' ? 'second-anilist-user' : 'second-mal-user'}
@@ -68,7 +70,7 @@ export default function AnimeRoyaleForm({
             className="btn-primary whitespace-nowrap flex items-center gap-2 justify-center"
           >
             <IconMagnifier size={20} />
-            {loading ? 'Cracking…' : 'Start battle'}
+            {loading ? 'Cracking…' : mode === 'battle' ? 'Start battle' : 'Matchmake'}
           </button>
         </div>
       )}
@@ -107,6 +109,20 @@ export default function AnimeRoyaleForm({
             <option key={option.id} value={option.id} disabled={platform === 'mal' && option.id === 'novels'}>
               {option.label}
             </option>
+          ))}
+        </select>
+        <label htmlFor="tone-select" className="text-brown-600 font-medium text-sm">
+          Tone:
+        </label>
+        <select
+          id="tone-select"
+          value={tone}
+          onChange={(event) => setTone(event.target.value)}
+          disabled={loading}
+          className="bg-white/50 border border-brown-300 text-brown-700 text-sm rounded-lg focus:ring-brown-500 focus:border-brown-500 block p-2 outline-none cursor-pointer"
+        >
+          {TONE_OPTIONS.map((option) => (
+            <option key={option.id} value={option.id}>{option.label}</option>
           ))}
         </select>
 

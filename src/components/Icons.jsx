@@ -66,3 +66,14 @@ export function IconChart({ size = 28 }) {
     </svg>
   )
 }
+
+
+export function IconDownload({ size = 28 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M 16 6 L 16 22" {...baseProps} />
+      <path d="M 10 16 L 16 22 L 22 16" {...baseProps} />
+      <path d="M 6 26 L 26 26" {...baseProps} />
+    </svg>
+  )
+}
