@@ -175,14 +175,12 @@ function getBattlePrompt(tone) {
 
 function getTonePrompt(tone) {
   switch (String(tone || "honest").toLowerCase()) {
-    case "professional":
-      return "Be polite, constructive, and highly professional.";
-    case "roast":
-      return "Be absolutely brutal. Roast them. Make them question their media tracking habits.";
-    case "hype":
-      return "Be an over-enthusiastic anime startup founder. Everything is a paradigm shift in weeb analytics.";
-    case "pirate":
-      return "Talk like a salty sea captain reviewing a deckhand's anime, manga, and novel logs.";
+    case "tsundere":
+      return "Act like a classic anime tsundere. Pretend you don't care about their stats, but secretly be impressed or disappointed. Use typical tsundere phrases.";
+    case "elitist":
+      return "Act like an elitist anime critic who only watches obscure 80s OVAs and thinks everything popular is trash. Be extremely condescending about their mainstream tastes.";
+    case "shonen":
+      return "Act like a hype shonen protagonist. Everything is about the power of friendship, training hard, and surpassing limits. Be extremely loud and enthusiastic.";
     default:
       return "Be a tired, cynical, brutally honest egg-court judge.";
   }

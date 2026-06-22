@@ -4,11 +4,10 @@ export const EXAMPLE_USERS = {
 }
 
 export const TONE_OPTIONS = [
-  { id: 'honest', label: 'Honest Judge' },
-  { id: 'roast', label: 'Brutal Roast' },
-  { id: 'hype', label: 'Hype Announcer' },
-  { id: 'professional', label: 'Professional' },
-  { id: 'pirate', label: 'Salty Pirate' },
+  { id: 'honest', label: 'Default (Aggressive Announcer)' },
+  { id: 'tsundere', label: 'Tsundere' },
+  { id: 'elitist', label: 'Elitist Critic' },
+  { id: 'shonen', label: 'Shonen Protagonist' },
 ]
 
 export const MEDIA_SCOPE_OPTIONS = [

@@ -16,6 +16,7 @@ import {
   getWinner,
 } from '../../lib/battle'
 import { EXAMPLE_USERS } from './constants'
+import { useHistory } from './useHistory'
 
 export default function AnimeRoyalePage() {
   const [mode, setMode] = useState('solo')
@@ -29,6 +30,7 @@ export default function AnimeRoyalePage() {
   const [result, setResult] = useState(null)
   const [copyStatus, setCopyStatus] = useState('')
   const resultRef = useRef(null)
+  const { history, addHistory, clearHistory } = useHistory()
 
   const canSubmit = useMemo(() => {
     if (loading) return false
@@ -64,7 +66,9 @@ export default function AnimeRoyalePage() {
         } catch {
           commentary = buildFallbackSoloRoast(player)
         }
-        setResult({ type: 'solo', platform, mediaScope, player, commentary })
+        const res = { type: 'solo', platform, mediaScope, player, commentary, tone }
+        setResult(res)
+        addHistory(res)
         return
       }
 
@@ -80,7 +84,9 @@ export default function AnimeRoyalePage() {
         } catch {
           commentary = buildFallbackMatchmaker(users[0], users[1])
         }
-        setResult({ type: 'matchmaker', platform, mediaScope, playerOne: users[0], playerTwo: users[1], commentary })
+        const res = { type: 'matchmaker', platform, mediaScope, playerOne: users[0], playerTwo: users[1], commentary, tone }
+        setResult(res)
+        addHistory(res)
         return
       }
 
@@ -97,7 +103,9 @@ export default function AnimeRoyalePage() {
       } catch {
         commentary = buildFallbackRoast(playerOne, playerTwo, winner)
       }
-      setResult({ type: 'battle', platform, mediaScope, playerOne, playerTwo, winner, commentary })
+      const res = { type: 'battle', platform, mediaScope, playerOne, playerTwo, winner, commentary, tone }
+      setResult(res)
+      addHistory(res)
     })
   }
 
@@ -154,7 +162,25 @@ export default function AnimeRoyalePage() {
     }
   }
 
+
+  const handleHistoryClick = (item) => {
+    setMode(item.type)
+    setPlatform(item.platform)
+    setMediaScope(item.mediaScope)
+    setTone(item.tone || 'honest')
+    if (item.type === 'solo') {
+      setUsernameOne(item.player.username)
+      setUsernameTwo('')
+    } else {
+      setUsernameOne(item.playerOne.username)
+      setUsernameTwo(item.playerTwo.username)
+    }
+    setResult(item)
+    setError(null)
+  }
+
   return (
+
     <div className="min-h-screen">
       <FloatingEgg className="hidden md:block fixed top-20 left-10" size={60} delay={0} opacity={0.35} />
       <FloatingEgg className="hidden md:block fixed bottom-32 right-12" size={48} delay={1} opacity={0.3} />
@@ -216,6 +242,35 @@ export default function AnimeRoyalePage() {
         {result && (
           <div ref={resultRef} className="bg-[#FDF6E3] rounded-xl overflow-hidden -mx-4 px-4 sm:mx-0 sm:px-0">
             <ResultView result={result} copyStatus={copyStatus} onCopy={copyResult} onDownload={downloadImage} />
+          </div>
+        )}
+
+
+        {!loading && history.length > 0 && (
+          <div className="mt-16">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-brown-700">Recent Court Records</h3>
+              <button onClick={clearHistory} className="text-xs text-brown-400 hover:text-brown-600">Clear History</button>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {history.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleHistoryClick(item)}
+                  className="card p-3 text-left hover:border-brown-400 transition-colors flex items-center gap-3"
+                >
+                  <div className="text-2xl">{item.type === 'solo' ? '🥚' : item.type === 'battle' ? '🥊' : '💖'}</div>
+                  <div className="flex-1 overflow-hidden">
+                    <div className="font-bold text-brown-700 truncate">
+                      {item.type === 'solo' ? item.player.username : item.playerOne.username + ' vs ' + item.playerTwo.username}
+                    </div>
+                    <div className="text-xs text-brown-500 uppercase tracking-wider mt-0.5">
+                      {item.platform} • {item.mediaScope} • {item.tone || 'honest'}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
