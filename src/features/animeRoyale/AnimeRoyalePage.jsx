@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useRef } from 'react'
+import { toPng } from 'html-to-image'
 import AnimeRoyaleForm from './components/AnimeRoyaleForm'
 import Loader from './components/Loader'
 import ErrorCard from './components/ErrorCard'
@@ -10,6 +11,8 @@ import {
   buildFallbackSoloRoast,
   generateBattleCommentary,
   generateSoloCommentary,
+  buildFallbackMatchmaker,
+  generateMatchmakerCommentary,
   getWinner,
 } from '../../lib/battle'
 import { EXAMPLE_USERS } from './constants'
@@ -18,17 +21,19 @@ export default function AnimeRoyalePage() {
   const [mode, setMode] = useState('solo')
   const [platform, setPlatform] = useState('anilist')
   const [mediaScope, setMediaScope] = useState('combined')
+  const [tone, setTone] = useState('honest')
   const [usernameOne, setUsernameOne] = useState('')
   const [usernameTwo, setUsernameTwo] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [result, setResult] = useState(null)
   const [copyStatus, setCopyStatus] = useState('')
+  const resultRef = useRef(null)
 
   const canSubmit = useMemo(() => {
     if (loading) return false
     if (!usernameOne.trim()) return false
-    if (mode === 'battle' && !usernameTwo.trim()) return false
+    if ((mode === 'battle' || mode === 'matchmaker') && !usernameTwo.trim()) return false
     return true
   }, [loading, mode, usernameOne, usernameTwo])
 
@@ -55,11 +60,27 @@ export default function AnimeRoyalePage() {
         const player = await fetchUserStats(platform, usernameOne.trim(), mediaScope)
         let commentary
         try {
-          commentary = await generateSoloCommentary({ platform, player, mediaScope })
+          commentary = await generateSoloCommentary({ platform, player, mediaScope, tone })
         } catch {
           commentary = buildFallbackSoloRoast(player)
         }
         setResult({ type: 'solo', platform, mediaScope, player, commentary })
+        return
+      }
+
+
+      if (mode === 'matchmaker') {
+        const users = await Promise.all([
+          fetchUserStats(platform, usernameOne.trim(), mediaScope),
+          fetchUserStats(platform, usernameTwo.trim(), mediaScope),
+        ])
+        let commentary
+        try {
+          commentary = await generateMatchmakerCommentary({ platform, mediaScope, playerOne: users[0], playerTwo: users[1], tone })
+        } catch {
+          commentary = buildFallbackMatchmaker(users[0], users[1])
+        }
+        setResult({ type: 'matchmaker', platform, mediaScope, playerOne: users[0], playerTwo: users[1], commentary })
         return
       }
 
@@ -72,7 +93,7 @@ export default function AnimeRoyalePage() {
       const winner = getWinner(playerOne, playerTwo)
       let commentary
       try {
-        commentary = await generateBattleCommentary({ platform, mediaScope, playerOne, playerTwo, winner })
+        commentary = await generateBattleCommentary({ platform, mediaScope, playerOne, playerTwo, winner, tone })
       } catch {
         commentary = buildFallbackRoast(playerOne, playerTwo, winner)
       }
@@ -82,9 +103,11 @@ export default function AnimeRoyalePage() {
 
   const toggleMode = () => {
     setMode((currentMode) => {
-      const nextMode = currentMode === 'solo' ? 'battle' : 'solo'
-      if (nextMode === 'solo') setUsernameTwo('')
-      return nextMode
+      let nextMode = 'solo';
+      if (currentMode === 'solo') nextMode = 'battle';
+      if (currentMode === 'battle') nextMode = 'matchmaker';
+      if (nextMode === 'solo') setUsernameTwo('');
+      return nextMode;
     })
     setError(null)
     setResult(null)
@@ -94,7 +117,7 @@ export default function AnimeRoyalePage() {
   const fillExamples = () => {
     const examples = EXAMPLE_USERS[platform] || ['', '']
     setUsernameOne(examples[0])
-    setUsernameTwo(mode === 'battle' ? examples[1] : '')
+    setUsernameTwo(mode !== 'solo' ? examples[1] : '')
   }
 
   const copyResult = async () => {
@@ -109,6 +132,25 @@ export default function AnimeRoyalePage() {
       window.setTimeout(() => setCopyStatus(''), 1800)
     } catch {
       setCopyStatus('Copy failed.')
+    }
+  }
+
+
+  const downloadImage = async () => {
+    if (!resultRef.current) return
+    try {
+      const dataUrl = await toPng(resultRef.current, {
+        quality: 0.95,
+        backgroundColor: '#FDF6E3',
+        style: { padding: '20px' }
+      })
+      const link = document.createElement('a')
+      link.download = 'animeroyale-stats.png'
+      link.href = dataUrl
+      link.click()
+    } catch (err) {
+      console.error('Failed to download image:', err)
+      alert('Oops, failed to generate the image.')
     }
   }
 
@@ -140,7 +182,7 @@ export default function AnimeRoyalePage() {
             onClick={toggleMode}
             className="text-brown-500 font-bold hover:text-brown-700 underline underline-offset-4 transition-colors text-sm"
           >
-            {mode === 'battle' ? 'Switch to Solo Inspection' : 'Try 1v1 Battle Mode 🥊'}
+            {mode === 'solo' ? 'Try 1v1 Battle Mode 🥊' : mode === 'battle' ? 'Try Matchmaker Mode 💖' : 'Switch to Solo Inspection'}
           </button>
         </div>
 
@@ -150,6 +192,8 @@ export default function AnimeRoyalePage() {
           setPlatform={setPlatform}
           mediaScope={mediaScope}
           setMediaScope={setMediaScope}
+          tone={tone}
+          setTone={setTone}
           usernameOne={usernameOne}
           usernameTwo={usernameTwo}
           loading={loading}
@@ -169,7 +213,11 @@ export default function AnimeRoyalePage() {
 
         {loading && <Loader mode={mode} />}
         {error && <ErrorCard error={error} />}
-        {result && <ResultView result={result} copyStatus={copyStatus} onCopy={copyResult} />}
+        {result && (
+          <div ref={resultRef} className="bg-[#FDF6E3] rounded-xl overflow-hidden -mx-4 px-4 sm:mx-0 sm:px-0">
+            <ResultView result={result} copyStatus={copyStatus} onCopy={copyResult} onDownload={downloadImage} />
+          </div>
+        )}
 
         <footer className="text-center text-brown-400 text-xs mt-16 pb-4">
           made with love · judged with eggs

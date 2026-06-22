@@ -3,6 +3,14 @@ export const EXAMPLE_USERS = {
   mal: ['Gigguk', 'DaZinga']
 }
 
+export const TONE_OPTIONS = [
+  { id: 'honest', label: 'Honest Judge' },
+  { id: 'roast', label: 'Brutal Roast' },
+  { id: 'hype', label: 'Hype Announcer' },
+  { id: 'professional', label: 'Professional' },
+  { id: 'pirate', label: 'Salty Pirate' },
+]
+
 export const MEDIA_SCOPE_OPTIONS = [
   {
     id: 'combined',
